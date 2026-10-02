@@ -212,7 +212,7 @@ h1{font-weight:700}
       </div>
     </aside>
   </div>
-  <p class="foot">Старт — 0 грн. Межі: від 1500 до 1700 ккал включно — максимум, рівно 2000 ккал ще «1700–2000»; вода від 1000 мл — максимум; танці й тренування — максимум, коли обрано всі три; рівно 10 000 кроків — ще «8–10 тис.»; рівно 90 г білка — «70–90». Значення запам'ятовуються в цьому браузері.</p>
+  <p class="foot">Старт — 0 грн. Межі: від 1500 до 1700 ккал включно — максимум, рівно 2000 ккал ще «1700–2000»; вода від 1000 мл — максимум; танці й тренування — максимум, коли є тренування і розтяжка; рівно 10 000 кроків — ще «8–10 тис.»; рівно 90 г білка — «70–90». Значення запам'ятовуються в цьому браузері.</p>
 </div>
 
 <script>
@@ -286,11 +286,12 @@ function render(){
   }
   v.act = ACTS.filter(a=>s.acts.includes(a.id)).reduce((a,b)=>a+b.v,0);
   const keys = ["food","steps","water","prot","act"];
-  const n = keys.filter(k=>v[k]===MAX[k]).length;
+  const isMax = k => k==="act" ? (s.acts.includes("train") && s.acts.includes("stretch")) : v[k]===MAX[k];
+  const n = keys.filter(isMax).length;
   const bonus = BONUS[n];
   const total = keys.reduce((a,k)=>a+v[k],0) + bonus;
 
-  keys.forEach(k=>{ setDelta("d-"+k, v[k]); setMax(k, v[k]===MAX[k]); });
+  keys.forEach(k=>{ setDelta("d-"+k, v[k]); setMax(k, isMax(k)); });
   ACTS.forEach(a=>$("act-"+a.id).setAttribute("aria-pressed", s.acts.includes(a.id)));
 
   const t=$("total"); t.firstChild.nodeValue = (total<0?"−":"") + Math.abs(total).toLocaleString("uk-UA")+" "; t.classList.toggle("neg", total<0);
