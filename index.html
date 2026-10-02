@@ -78,6 +78,9 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px var(-
 .tier.on.top{background:linear-gradient(135deg,var(--brass-2),var(--brass));border-color:var(--brass);color:#2A2117}
 
 .chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.card-wide{grid-column:1/-1}
+.card-wide .chips{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:660px){.card-wide .chips{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .chip{font:inherit;font-weight:600;font-size:13.5px;flex-wrap:wrap;min-width:0;text-align:left;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:3px;padding:12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:6px;transition:all .2s}
 .chip small{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
 .chip:hover{border-color:var(--brass)}
@@ -95,8 +98,8 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px var(-
 .total .cur{font-size:.36em;font-style:italic;font-weight:500;color:#D6B878}
 .total.neg{color:#E89A80}
 .scale{display:flex;flex-direction:column;gap:7px}
-.bar{position:relative;height:4px;border-radius:99px;background:linear-gradient(90deg,#B85A3E 0%,#C7894F 24.2%,#8FA676 24.2%,#D6B878 100%)}
-.bar .zero{position:absolute;left:24.2%;top:-5px;bottom:-5px;width:1px;background:rgba(241,234,218,.7)}
+.bar{position:relative;height:4px;border-radius:99px;background:linear-gradient(90deg,#B85A3E 0%,#C7894F 29.5%,#8FA676 29.5%,#D6B878 100%)}
+.bar .zero{position:absolute;left:29.5%;top:-5px;bottom:-5px;width:1px;background:rgba(241,234,218,.7)}
 .bar .pin{position:absolute;top:50%;width:16px;height:16px;border-radius:50%;background:#F1EADA;box-shadow:0 0 0 3px rgba(214,184,120,.45);transform:translate(-50%,-50%);transition:left .45s cubic-bezier(.3,1.3,.5,1)}
 .scale-legend{display:flex;justify-content:space-between;font-size:11px;color:rgba(241,234,218,.55);font-variant-numeric:tabular-nums}
 .lines{display:flex;flex-direction:column;border-top:1px solid rgba(214,184,120,.3);padding-top:14px;gap:9px}
@@ -109,7 +112,7 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px var(-
 .leaves{display:flex;gap:6px}
 .leaf{width:22px;height:22px;color:rgba(241,234,218,.2);transition:color .3s,transform .3s}
 .leaf.on{color:#D6B878;transform:rotate(-12deg)}
-.bonus-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;font-size:11px;text-align:center;font-variant-numeric:tabular-nums}
+.bonus-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;font-size:11px;text-align:center;font-variant-numeric:tabular-nums}
 .bonus-steps div{padding:4px 0;border-radius:3px;color:rgba(241,234,218,.45)}
 .bonus-steps div.on{color:#23291E;background:#D6B878;font-weight:700}
 .reset{font:inherit;font-weight:600;font-size:13px;letter-spacing:.04em;background:transparent;color:#F1EADA;border:1px solid rgba(241,234,218,.35);border-radius:3px;padding:11px;cursor:pointer;transition:border-color .2s,background .2s}
@@ -160,12 +163,15 @@ h1{font-weight:700}
         <div class="tiers" id="t-steps"></div>
       </article>
 
-      <article class="card" id="c-act">
+
+      <article class="card" id="c-water">
         <div class="card-head">
-          <div><h2 class="card-title">Танці й тренування</h2><p class="card-sub">Що було сьогодні</p><span class="maxtag" hidden>✦ максимум</span></div>
-          <span class="delta" id="d-act"></span>
+          <div><h2 class="card-title">Вода</h2><p class="card-sub">Випито за день</p><span class="maxtag" hidden>✦ максимум</span></div>
+          <span class="delta" id="d-water"></span>
         </div>
-        <div class="chips" id="chips" role="group" aria-label="Активність"></div>
+        <label class="value-row"><input type="number" id="water" min="0" max="6000" step="50" inputmode="numeric" aria-label="Вода"><span class="unit">мл</span></label>
+        <input type="range" id="water-r" min="0" max="2500" step="50" aria-label="Вода, повзунок">
+        <div class="tiers" id="t-water"></div>
       </article>
 
       <article class="card" id="c-prot">
@@ -177,6 +183,14 @@ h1{font-weight:700}
         <input type="range" id="prot-r" min="0" max="140" step="1" aria-label="Білок, повзунок">
         <div class="tiers" id="t-prot"></div>
       </article>
+
+      <article class="card card-wide" id="c-act">
+        <div class="card-head">
+          <div><h2 class="card-title">Танці й тренування</h2><p class="card-sub">Можна обрати кілька</p><span class="maxtag" hidden>✦ максимум</span></div>
+          <span class="delta" id="d-act"></span>
+        </div>
+        <div class="chips" id="chips" role="group" aria-label="Активність"></div>
+      </article>
     </section>
 
     <aside class="receipt" aria-live="polite">
@@ -187,35 +201,43 @@ h1{font-weight:700}
         </div>
         <div class="scale">
           <div class="bar"><span class="zero"></span><span class="pin" id="pin"></span></div>
-          <div class="scale-legend"><span>−800</span><span>0</span><span>2 500</span></div>
+          <div class="scale-legend"><span>−1 300</span><span>0</span><span>3 100</span></div>
         </div>
         <div class="lines" id="lines"></div>
         <div class="bonus">
           <div class="bonus-head"><span class="r-label">Бонус за максимуми</span><div class="leaves" id="leaves"></div></div>
-          <div class="bonus-steps" id="bsteps"><div>1 · +50</div><div>2 · +100</div><div>3 · +200</div><div>4 · +400</div></div>
+          <div class="bonus-steps" id="bsteps"><div>1 · 0</div><div>2 · +50</div><div>3 · +100</div><div>4 · +200</div><div>5 · +400</div></div>
         </div>
         <button class="reset" id="reset" type="button">Почати новий день</button>
       </div>
     </aside>
   </div>
-  <p class="foot">Старт — 0 грн. Межі: рівно 1700 ккал рахується як «≤1700», рівно 2000 — як «1700–2000»; рівно 10 000 кроків — ще «8–10 тис.»; рівно 90 г білка — «70–90». Значення запам'ятовуються в цьому браузері.</p>
+  <p class="foot">Старт — 0 грн. Межі: від 1500 до 1700 ккал включно — максимум, рівно 2000 ккал ще «1700–2000»; вода від 1000 мл — максимум; танці й тренування — максимум, коли обрано всі три; рівно 10 000 кроків — ще «8–10 тис.»; рівно 90 г білка — «70–90». Значення запам'ятовуються в цьому браузері.</p>
 </div>
 
 <script>
 const TIERS = {
-  food:  [{l:"≤1700",v:500,test:x=>x<=1700},{l:"1700–2000",v:300,test:x=>x<=2000},{l:">2000",v:-500,test:()=>true}],
+  food:  [{l:"<1200",v:-500,test:x=>x<1200},{l:"1200–1500",v:300,test:x=>x<1500},{l:"1500–1700",v:500,test:x=>x<=1700},{l:"1700–2000",v:300,test:x=>x<=2000},{l:">2000",v:-500,test:()=>true}],
   steps: [{l:"<4 тис.",v:100,test:x=>x<4000},{l:"4–6 тис.",v:300,test:x=>x<6000},{l:"6–8 тис.",v:400,test:x=>x<8000},{l:"8–10 тис.",v:500,test:x=>x<=10000},{l:">10 тис.",v:700,test:()=>true}],
+  water: [{l:"<500 мл",v:-500,test:x=>x<500},{l:"500–750",v:-100,test:x=>x<750},{l:"750–1000",v:100,test:x=>x<1000},{l:"1000+",v:200,test:()=>true}],
   prot:  [{l:"<50",v:-300,test:x=>x<50},{l:"50–70",v:200,test:x=>x<70},{l:"70–90",v:300,test:x=>x<=90},{l:">90",v:500,test:()=>true}]
 };
 const ACTS = [{id:"none",l:"Нічого",v:-100},{id:"stretch",l:"Розтяжка",v:100},{id:"dance",l:"Танці",v:300},{id:"train",l:"Тренування",v:400}];
-const BONUS = [0,50,100,200,400];
-const MAX = {food:500,steps:700,act:400,prot:500};
-const DEF = {kcal:1650,steps:7200,act:"train",prot:85};
-const KEY = "gryvnia-day-v1";
+const BONUS = [0,0,50,100,200,400];
+const MAX = {food:500,steps:700,water:200,act:800,prot:500};
+const MIN = -1300, TOP = 3100;
+const NUMS = [["kcal","food"],["steps","steps"],["water","water"],["prot","prot"]];
+const DEF = {kcal:1650,steps:7200,water:1200,acts:["train","stretch"],prot:85};
+const KEY = "gryvnia-day-v2";
 const LEAF = '<svg class="leaf" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c.6 2.2 1.8 3.4 3.6 3.3-.5 1.4-.3 2.4.6 3.1 1-.6 2.2-.7 3.6-.2-.6 1.6-.5 2.9.4 3.8-1.6.5-2.5 1.4-2.6 2.9-1.4-.6-2.8-.5-4 .5l.6 2.6h-.4L13 16.4V22h-2v-5.6l-.8 1.6h-.4l.6-2.6c-1.2-1-2.6-1.1-4-.5-.1-1.5-1-2.4-2.6-2.9.9-.9 1-2.2.4-3.8 1.4-.5 2.6-.4 3.6.2.9-.7 1.1-1.7.6-3.1C10.2 5.4 11.4 4.2 12 2z"/></svg>';
 
 let s = {...DEF};
-try{ const saved = JSON.parse(localStorage.getItem(KEY)||"null"); if(saved) s = {...DEF,...saved}; }catch(e){}
+try{
+  const saved = JSON.parse(localStorage.getItem(KEY)||"null");
+  if(saved) s = {...DEF,...saved};
+  else { const old = JSON.parse(localStorage.getItem("gryvnia-day-v1")||"null"); if(old) s = {...DEF, kcal:old.kcal??DEF.kcal, steps:old.steps??DEF.steps, prot:old.prot??DEF.prot, acts:[old.act||"none"]}; }
+}catch(e){}
+if(!Array.isArray(s.acts)||!s.acts.length) s.acts=["none"];
 
 const $ = id => document.getElementById(id);
 const fmt = n => (n<0?"−":n>0?"+":"") + Math.abs(n).toLocaleString("uk-UA");
@@ -223,21 +245,29 @@ const pick = (t,x) => t.findIndex(r=>r.test(x));
 
 $("today").textContent = new Date().toLocaleDateString("uk-UA",{weekday:"long",day:"numeric",month:"long"});
 
-for(const k of ["food","steps","prot"]){
-  const top = Math.max(...TIERS[k].map(r=>r.v));
-  $("t-"+k).innerHTML = TIERS[k].map(r=>`<div class="tier" data-top="${r.v===top}" data-v="${r.v}"><b>${fmt(r.v)}</b>${r.l}</div>`).join("");
+for(const k of Object.keys(TIERS)){
+  $("t-"+k).innerHTML = TIERS[k].map(r=>`<div class="tier" data-top="${r.v===MAX[k]}" data-v="${r.v}"><b>${fmt(r.v)}</b>${r.l}</div>`).join("");
 }
 $("chips").innerHTML = ACTS.map(a=>`<button type="button" class="chip" id="act-${a.id}" data-id="${a.id}" aria-pressed="false">${a.l}<small>${fmt(a.v)}</small></button>`).join("");
-$("leaves").innerHTML = LEAF.repeat(4);
+$("leaves").innerHTML = LEAF.repeat(5);
 
-function bind(key, num, rng){
-  const set = v => { v = Math.max(0, Number(v)||0); s[key]=v; render(); };
-  $(num).addEventListener("input", e=>set(e.target.value));
-  $(rng).addEventListener("input", e=>set(e.target.value));
+for(const [key] of NUMS){
+  const set = v => { s[key] = Math.max(0, Number(v)||0); render(); };
+  $(key).addEventListener("input", e=>set(e.target.value));
+  $(key+"-r").addEventListener("input", e=>set(e.target.value));
 }
-bind("kcal","kcal","kcal-r"); bind("steps","steps","steps-r"); bind("prot","prot","prot-r");
-$("chips").addEventListener("click", e=>{ const b=e.target.closest(".chip"); if(!b) return; s.act=b.dataset.id; render(); });
-$("reset").addEventListener("click", ()=>{ s={kcal:0,steps:0,act:"none",prot:0}; render(); $("kcal").focus(); });
+$("chips").addEventListener("click", e=>{
+  const b=e.target.closest(".chip"); if(!b) return;
+  const id=b.dataset.id;
+  if(id==="none") s.acts=["none"];
+  else {
+    const set=new Set(s.acts.filter(x=>x!=="none"));
+    set.has(id)?set.delete(id):set.add(id);
+    s.acts = set.size ? [...set] : ["none"];
+  }
+  render();
+});
+$("reset").addEventListener("click", ()=>{ s={kcal:0,steps:0,water:0,acts:["none"],prot:0}; render(); $("kcal").focus(); });
 
 function setDelta(id, v){ const el=$(id); el.textContent = fmt(v)+" ₴"; el.className = "delta "+(v>=0?"pos":"neg"); }
 function setTiers(k, idx){
@@ -245,32 +275,30 @@ function setTiers(k, idx){
     el.className = "tier" + (i===idx ? " on " + (el.dataset.top==="true"?"top":(+el.dataset.v>=0?"pos":"neg")) : "");
   });
 }
-function setMax(card, on){ $(card).classList.toggle("is-max",on); $(card).querySelector(".maxtag").hidden=!on; }
+function setMax(k, on){ const c=$("c-"+k); c.classList.toggle("is-max",on); c.querySelector(".maxtag").hidden=!on; }
 
 function render(){
-  const iF = pick(TIERS.food, s.kcal), iS = pick(TIERS.steps, s.steps), iP = pick(TIERS.prot, s.prot);
-  const food = TIERS.food[iF].v, steps = TIERS.steps[iS].v, prot = TIERS.prot[iP].v;
-  const act = ACTS.find(a=>a.id===s.act).v;
-  const maxes = {food:food===MAX.food, steps:steps===MAX.steps, act:act===MAX.act, prot:prot===MAX.prot};
-  const n = Object.values(maxes).filter(Boolean).length;
-  const bonus = BONUS[n];
-  const total = food+steps+act+prot+bonus;
-
-  for(const [k,num,rng] of [["kcal","kcal","kcal-r"],["steps","steps","steps-r"],["prot","prot","prot-r"]]){
-    if(document.activeElement!==$(num)) $(num).value = s[k];
-    $(rng).value = s[k];
+  const v = {};
+  for(const [key,k] of NUMS){
+    const i = pick(TIERS[k], s[key]); v[k] = TIERS[k][i].v; setTiers(k,i);
+    if(document.activeElement!==$(key)) $(key).value = s[key];
+    $(key+"-r").value = s[key];
   }
-  setDelta("d-food",food); setDelta("d-steps",steps); setDelta("d-act",act); setDelta("d-prot",prot);
-  setTiers("food",iF); setTiers("steps",iS); setTiers("prot",iP);
-  ACTS.forEach(a=>$("act-"+a.id).setAttribute("aria-pressed", a.id===s.act));
-  setMax("c-food",maxes.food); setMax("c-steps",maxes.steps); setMax("c-act",maxes.act); setMax("c-prot",maxes.prot);
+  v.act = ACTS.filter(a=>s.acts.includes(a.id)).reduce((a,b)=>a+b.v,0);
+  const keys = ["food","steps","water","prot","act"];
+  const n = keys.filter(k=>v[k]===MAX[k]).length;
+  const bonus = BONUS[n];
+  const total = keys.reduce((a,k)=>a+v[k],0) + bonus;
+
+  keys.forEach(k=>{ setDelta("d-"+k, v[k]); setMax(k, v[k]===MAX[k]); });
+  ACTS.forEach(a=>$("act-"+a.id).setAttribute("aria-pressed", s.acts.includes(a.id)));
 
   const t=$("total"); t.firstChild.nodeValue = (total<0?"−":"") + Math.abs(total).toLocaleString("uk-UA")+" "; t.classList.toggle("neg", total<0);
-  $("pin").style.left = ((total+800)/3300*100)+"%";
-  const cls = v => v>=0?"p":"n";
-  $("lines").innerHTML = [["Харчування",food],["Кроки",steps],["Активність",act],["Білок",prot]]
-    .map(([l,v])=>`<div class="line"><span>${l}</span><span class="${cls(v)}">${fmt(v)}</span></div>`).join("")
-    + `<div class="line"><span>Бонус (${n} з 4)</span><span class="g">${fmt(bonus)}</span></div>`;
+  $("pin").style.left = Math.min(100,Math.max(0,(total-MIN)/(TOP-MIN)*100))+"%";
+  const cls = x => x>=0?"p":"n";
+  $("lines").innerHTML = [["Харчування",v.food],["Кроки",v.steps],["Вода",v.water],["Білок",v.prot],["Активність",v.act]]
+    .map(([l,x])=>`<div class="line"><span>${l}</span><span class="${cls(x)}">${fmt(x)}</span></div>`).join("")
+    + `<div class="line"><span>Бонус (${n} з 5)</span><span class="g">${fmt(bonus)}</span></div>`;
   [...$("leaves").children].forEach((el,i)=>el.classList.toggle("on", i<n));
   [...$("bsteps").children].forEach((el,i)=>el.classList.toggle("on", i===n-1));
 
